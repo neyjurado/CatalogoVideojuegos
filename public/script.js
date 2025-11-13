@@ -6,29 +6,36 @@ const videojuegos = [
         nombre: "Elden Ring",
         descripcion: "Acción · RPG · PC / PS5 / Xbox",
         raiting: 4.5,
-        imagen: "https://images.igdb.com/igdb/image/upload/t_cover_big/co1r76.png"
+        imagen: "https://media.revistagq.com/photos/60c74427ca86b718ddda048c/16:9/w_2560%2Cc_limit/Elden-Ring.jpg"
     },
     { 
         id: 2,
         nombre: "God of War",
         descripcion: "Acción · Aventura · PS4 / PS5",
         raiting: 4.9,
-        imagen: "https://images.igdb.com/igdb/image/upload/t_cover_big/co6a5r.png"
+        imagen: "https://gmedia.playstation.com/is/image/SIEPDC/god-of-war-listing-thumb-01-ps4-us-12jun17?$facebook$"
     },
     { 
         id: 3,
         nombre: "ZeldaTOTK",
         descripcion: "Aventura · Mundo abierto · Switch",
         raiting: 4.7,    
-        imagen: "https://images.igdb.com/igdb/image/upload/t_cover_big/co48qj.png"
+        imagen: "https://gonintendo.com/attachments/image/55214/file/medium-ecd8f573d463ef8e98a1b5150feb2209.jpg"
     },
     {
         id: 4,
         nombre: "Fortnite",
         descripcion: "Battle Royale · Multiplataforma",
         raiting: 4.3,
-        imagen: "https://images.igdb.com/igdb/image/upload/t_cover_big/co5s5d.png"
+        imagen: "https://i.ytimg.com/vi/adGdyCdvKz4/maxresdefault.jpg"
 
+    },
+    {
+        id: 5,
+        nombre: "Call of Duty: Warzone",
+        descripcion: "Battle Royale · Multiplataforma",
+        raiting: 4.3,
+        imagen: "https://i0.wp.com/seven.com.ec/wp-content/uploads/2022/03/0001-call_of_duty_warzone-seven_ecuador-videojuegos-gamers-juegos-0001.jpg?fit=1920%2C1080&ssl=1"
     }
 ];
 
