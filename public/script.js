@@ -1,50 +1,54 @@
-//datos de prueba
+//selecciones del dom
+
+const grid = document.querySelector("#grid-videojuegos");
+const estadoCarga = document.querySelector("#estado-carga");
+const estadoError = document.querySelector("#estado-error");
+const inputBusqueda = document.querySelector('input[placeholder="Buscar videojuego..."]');
+
+
+
+
+
+//local data de videojuegos si la api falla
 
 const videojuegos = [
     { 
-        id: 1,
-        nombre: "Elden Ring",
-        descripcion: "Acción · RPG · PC / PS5 / Xbox",
-        raiting: 4.5,
-        imagen: "https://media.revistagq.com/photos/60c74427ca86b718ddda048c/16:9/w_2560%2Cc_limit/Elden-Ring.jpg"
+        title: "Elden Ring",
+        thumb: "https://media.revistagq.com/photos/60c74427ca86b718ddda048c/16:9/w_2560%2Cc_limit/Elden-Ring.jpg",
+        normalPrice: "_",
+        salePrice: "_",
+        savings: null,
     },
+    
     { 
-        id: 2,
-        nombre: "God of War",
-        descripcion: "Acción · Aventura · PS4 / PS5",
-        raiting: 4.9,
-        imagen: "https://gmedia.playstation.com/is/image/SIEPDC/god-of-war-listing-thumb-01-ps4-us-12jun17?$facebook$"
-    },
-    { 
-        id: 3,
-        nombre: "ZeldaTOTK",
-        descripcion: "Aventura · Mundo abierto · Switch",
-        raiting: 4.7,    
-        imagen: "https://gonintendo.com/attachments/image/55214/file/medium-ecd8f573d463ef8e98a1b5150feb2209.jpg"
-    },
-    {
-        id: 4,
-        nombre: "Fortnite",
-        descripcion: "Battle Royale · Multiplataforma",
-        raiting: 4.3,
-        imagen: "https://i.ytimg.com/vi/adGdyCdvKz4/maxresdefault.jpg"
-
-    },
-    {
-        id: 5,
-        nombre: "Call of Duty: Warzone",
-        descripcion: "Battle Royale · Multiplataforma",
-        raiting: 4.3,
-        imagen: "https://i0.wp.com/seven.com.ec/wp-content/uploads/2022/03/0001-call_of_duty_warzone-seven_ecuador-videojuegos-gamers-juegos-0001.jpg?fit=1920%2C1080&ssl=1"
+        title: "God of War",
+        thumb: "https://gmedia.playstation.com/is/image/SIEPDC/god-of-war-listing-thumb-01-ps4-us-12jun17?$facebook$",
+        normalPrice: "_",
+        salePrice: "_",
+        savings: null,
     }
 ];
 
-const grid = document.querySelector("#grid-videojuegos");
 
 // Función para pintar las cards
 function renderizarVideojuegos(lista) {
     grid.innerHTML = ""; // Limpiar el grid antes de renderizar
     lista.forEach((juego) => {
+
+        
+        const title = juego.title || juego.external || "Juego";
+        const thumb = juego.thumb || juego.thumbnail || "";
+        
+        //precios y ahorro con fallbacks
+        //usamos ?? para valores nulos o indefinidos
+        const normal = juego.normalPrice ??"_";
+        const oferta = juego.salePrice ?? juego.cheapest ??"_";
+
+        //ahorro redondeado si existe o null si no existe
+        const ahorro = juego.savings ? Math.round(juego.savings) : null; 
+
+
+
         // Creamos el html de cada card
         const card = document.createElement("article");
         card.className = "bg-white rounded-xl shadow-sm overflow-hidden border slate-100 flex flex-col";
@@ -52,27 +56,73 @@ function renderizarVideojuegos(lista) {
         // Insertamos el contenido de la card 
         card.innerHTML = ` 
         <img 
-            src="${juego.imagen}"
-            alt="${juego.nombre}"
+            src="${thumb}"
+            alt="${title}"
             class="h-40 w-full object-cover"
         />
         <div class="p-4 flex flex-col gap-2 flex-1">
-            <h3 class="text-lg font-semibold text-gray-800">${juego.nombre}</h3>
-            <p class="text-gray-600 text-sm flex-1">${juego.descripcion}</p>
-            <div class="mt-4">
-                <span class="text-yellow-500 font-bold">⭐ ${juego.raiting}</span>
-            </div>
+            <h3 class="text-lg font-semibold text-gray-800">${title}</h3>
+
+
+            <p class="text-xs text-slate-500">
+            Precio: ${
+                normal && normal !== "_" ? ` <s>$${normal}</s> ` : "_"                
+            }
+            ${
+                oferta && oferta !== "_"
+                    ? ` . <span class="front-semiboald text-slate-900">$${oferta}</span> `
+                    : "_"
+                }
+                ${ahorro ?` . Ahorro ${ahorro}%` : ""}
+            </p>
+
+            <button class="mt-2 w-full bg-slate-900 text-white py-2 rounded-lg text-sm haver: bg-slate-700 transition-colors">
+            ver detalle
+            </button>
         </div>
         `;
+
+
+    
 
         // Agregamos la card al grid
         grid.appendChild(card);
     });
 }
 
+//cargar y renderizar videojuegos al inicio
+//async significa que la funcion maneja operaciones asincronas
+
+async function cargarVideoJuegosInicial(){
+    estadoCarga.classList.remove("hidden");
+    estadoError.classList.add("hidden");
+    try {
+        const url = "https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=15";
+        const resp = await fetch(url);//espera la respuesta de la api
+        if (!resp.ok){
+            throw new Error ("error en la respuesta de la api")
+        }
+        const data = await resp.json(); //espera la convercion a json
+
+        //esto lo guarda en un cache 
+        window._juegosCache = data;
+        renderizarVideojuegos(data);
+    } catch (e){
+        console.error("error al cargar CheapShark", e);
+        estadoError.classList.remove("hidden");
+        renderizarVideojuegos(videojuegos);
+    } finally{
+        estadoCarga.classList.add("hidden");
+    }
+} 
+cargarVideoJuegosInicial();
+
+
 // Llamar la función cuando el documento esté cargado
 document.addEventListener('DOMContentLoaded', () => {
-    renderizarVideojuegos(videojuegos);
+    cargarVideoJuegosInicial();
 });
+
+
 
 
